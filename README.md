@@ -23,6 +23,8 @@ npm test
 * BodyParser
 * Node.js with Express
 * lodash
+* mocha
+* chai
 
 ### TODO / WIP
 
