@@ -1,13 +1,51 @@
-/**
- * Created by arpit.gupta on 06-07-2017.
- */
-const environmentConst = 'env',
-    devEnvironmentConst = 'development'
+const {createLogger, info} = require ("bunyan");
+const logger = createLogger (
+    {
+        name: 'marcopolo-invoiceparser',
+        streams: [
+            {
+                level: info,
+                path: "log.log"
+            }
+        ],
+        src: true
+    });
+const stringDataTypeConst = "string",
+    curlyBrace = "{",
+    bigBrace = "[";
 module.exports = (err, req, res, next) => {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get(environmentConst) === devEnvironmentConst ? err : {};
+    if (err) {
+        try {
+            res.status (err.status || 500).send (parseStringToJson (err.message));
+            handleError (err.message);
+        } catch (ex) {
+            res.status (500).send (parseStringToJson (ex));
+            handleError (ex);
+        }
+    }
 
-    // render the error page
-    res.status(err.status || 500);
+    return next ();
 };
+
+/**
+ *
+ * @param {string} err error in callback.
+ */
+function handleError (err) {
+    if (err) {
+        logger.info (err);
+    }
+}
+
+/**
+ *
+ * @param {string} body Body contain fields required to be added or updated by service.
+ * @returns {object} body Body contain fields required to be added or updated by service.
+ */
+function parseStringToJson (body) {
+    if (body && typeof body === stringDataTypeConst && (body.indexOf (curlyBrace) === 0 || body.indexOf(bigBrace) === 0)) {
+        return JSON.parse (body);
+    }
+
+    return body;
+}

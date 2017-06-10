@@ -4,13 +4,14 @@ const app = express();
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
 const marcoPolo = require('./controller/marcoPolo');
-const invoiceParser = require('./controller/invoiceParser');
+const {DecryptInvoice, RetrieveDecryptedInvoice} = require('./controller/invoiceParser');
 const notFoundStatus = 'Not Found';
 
 app.use('/marcopolo/:n', marcoPolo);
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
-app.use('/invoiceparser', invoiceParser);
+app.post('/invoiceparser', DecryptInvoice);
+app.get('/invoiceparser/:filename', RetrieveDecryptedInvoice);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
