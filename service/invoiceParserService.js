@@ -3,29 +3,44 @@
  */
 
 const _ = require('lodash');
-const    emptyStringConst = '',
+const {readFileAsync, writeFileAsync} = require('./shared');
+const emptyStringConst = '',
     zeroSegmentConst = ' _ | ||_|',
-oneSegmentConst = '     |  |',
-twoSegmentConst = ' _  _||_ ',
-threeSegmentConst = ' _  _| _|',
-fourSegmentConst = '   |_|  |',
-fiveSegmentConst = ' _ |_  _|',
-sixSegmentConst =' _ |_ |_|',
-sevenSegmentConst = ' _   |  |',
-eightSegmentConst = ' _ |_||_|',
-nineSegmentConst = ' _ |_| _|',
-queryStringConst = '?',
-illegalStringConst = ' ILLEGAL',
-newLineConst = '\n';
+    oneSegmentConst = '     |  |',
+    twoSegmentConst = ' _  _||_ ',
+    threeSegmentConst = ' _  _| _|',
+    fourSegmentConst = '   |_|  |',
+    fiveSegmentConst = ' _ |_  _|',
+    sixSegmentConst = ' _ |_ |_|',
+    sevenSegmentConst = ' _   |  |',
+    eightSegmentConst = ' _ |_||_|',
+    nineSegmentConst = ' _ |_| _|',
+    queryStringConst = '?',
+    illegalStringConst = ' ILLEGAL',
+    newLineConst = '\n',
+    commaSeparator = ',';
 class InvoiceParser {
     constructor() {
     }
 
     /**
      *
-     * @param file
+     * @param fileName
+     * @param next
+     * @returns {*}
      */
-    processFile(file) {
+    readFile(fileName, next) {
+        return readFileAsync(fileName, next);
+    }
+
+    /**
+     *
+     * @param file
+     * @param fileName
+     * @param next
+     * @returns {Promise}
+     */
+    processFile(file, fileName, next) {
         const lines = file.split('\n'), // split file into lines
             length = lines.length, // calculate the total number of lines
             amount = _.floor(length / 4), // calculate the number of invoice numbers (4 lines per invoice number)
@@ -42,9 +57,9 @@ class InvoiceParser {
         });
         let data = emptyStringConst;
         _.each(numbers, (number) => {
-            data += number + (_.includes(number, queryStringConst) ? illegalStringConst : emptyStringConst) + newLineConst;
+            data += number + (_.includes(number, queryStringConst) ? illegalStringConst : emptyStringConst) + commaSeparator + newLineConst;
         });
-        return data;
+        return writeFileAsync(fileName, data, next);
     }
 
     /**

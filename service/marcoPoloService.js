@@ -12,7 +12,7 @@ const fourConst = 4,
 module.exports = (n) => {
     return {
         getResult: () => {
-            const result = [], x = n > 1000 ? n / 1000 : 1;
+            const result = [], x = n > 1000 ? Math.ceil(n / 1000) : 1;
             let y = 1;
 
             for (let i = 1; i <= x; i++) {
